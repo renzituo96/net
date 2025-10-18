@@ -18,7 +18,8 @@ exports.handler = async function(event, context) {
           message: '方法不允许，请使用POST请求'
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     }
@@ -35,7 +36,8 @@ exports.handler = async function(event, context) {
           message: '请求参数错误，请检查输入'
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     }
@@ -50,7 +52,8 @@ exports.handler = async function(event, context) {
           message: '请输入有效的邮箱地址'
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     }
@@ -64,7 +67,8 @@ exports.handler = async function(event, context) {
           message: '密码长度不能少于6位'
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     }
