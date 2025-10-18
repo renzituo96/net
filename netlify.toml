@@ -3,13 +3,6 @@
   publish = "."
   functions = "netlify/functions"
 
-# 将auth/register路径重定向到auth-register函数
-[[redirects]]
-  from = "/.netlify/functions/auth/register"
-  to = "/.netlify/functions/auth-register"
-  status = 200
-  force = true
-
 # 确保函数路径不被重定向
 [[redirects]]
   from = "/.netlify/*"
