@@ -3,6 +3,14 @@
   publish = "."
   functions = "netlify/functions"
 
+# 确保函数路径不被重定向
+[[redirects]]
+  from = "/.netlify/*"
+  to = "/.netlify/:splat"
+  status = 200
+  force = true
+
+# 其他路径重定向到index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
