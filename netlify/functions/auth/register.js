@@ -1,9 +1,12 @@
-const axios = require('axios');
-require('dotenv').config();
-
-// 从环境变量获取Supabase配置
+// 移除外部依赖，使用Node.js内置fetch API
+// 从环境变量获取Supabase配置（如果在Netlify环境中设置了）
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bomcaovuvfnoystxrrqf.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvbWNhb3Z1dmZub3lzdHhycnFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA0MjY2MDksImV4cCI6MjA3NjAwMjYwOX0.-L13h5RR9fFZV4H9Bj3bGf9e3S5N_isWa8kuzqjlhHs';
+
+// 确保fetch API可用
+if (!globalThis.fetch) {
+  globalThis.fetch = require('node-fetch');
+}
 
 exports.handler = async function(event, context) {
   try {
@@ -66,24 +69,24 @@ exports.handler = async function(event, context) {
       };
     }
     
-    // 发送注册请求到Supabase
-    const response = await axios({
+    // 使用Node.js内置fetch API发送注册请求到Supabase
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
       method: 'POST',
-      url: `${SUPABASE_URL}/rest/v1/users`,
-      data: {
-        username,
-        email,
-        password
-      },
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Accept': 'application/json'
-      }
+      },
+      body: JSON.stringify({
+        username,
+        email,
+        password
+      })
     });
     
-    if (response.status >= 200 && response.status < 300) {
+    // fetch API需要手动检查状态并解析响应体
+    if (response.ok) {
       return {
         statusCode: 200,
         body: JSON.stringify({
@@ -91,7 +94,8 @@ exports.handler = async function(event, context) {
           message: '注册成功！用户信息已保存'
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     } else {
@@ -104,7 +108,8 @@ exports.handler = async function(event, context) {
             message: '用户名或邮箱已存在'
           }),
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
           }
         };
       }
@@ -116,59 +121,26 @@ exports.handler = async function(event, context) {
           message: `注册失败，状态码: ${response.status}`
         }),
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
         }
       };
     }
   } catch (error) {
     console.error('Registration error:', error.message);
     
-    if (error.response) {
-      if (error.response.status === 409) {
-        return {
-          statusCode: 409,
-          body: JSON.stringify({
-            success: false,
-            message: '用户名或邮箱已存在'
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        };
+    // fetch API的错误处理更简单
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        success: false,
+        message: `程序错误: ${error.message || '未知错误'}`
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
       }
-      
-      return {
-        statusCode: error.response.status || 500,
-        body: JSON.stringify({
-          success: false,
-          message: `服务器错误: ${error.response.status || '未知错误'}`
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-    } else if (error.request) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          success: false,
-          message: '网络请求失败，请检查网络连接'
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-    } else {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({
-          success: false,
-          message: `程序错误: ${error.message || '未知错误'}`
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      };
-    }
+    };
+  }
   }
 };
