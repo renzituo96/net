@@ -3,7 +3,14 @@
   publish = "."
   functions = "netlify/functions"
 
-# 确保函数路径不被重定向
+# 重定向规则 - 优先保留函数路径
+[[redirects]]
+  from = "/.netlify/functions/auth-register-form"
+  to = "/.netlify/functions/auth-register-form"
+  status = 200
+  force = true
+
+[[redirects]]
 [[redirects]]
   from = "/.netlify/*"
   to = "/.netlify/:splat"
