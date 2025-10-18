@@ -46,7 +46,7 @@ app.listen(PORT, () => {
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`API endpoints:`);
   console.log(`- POST http://localhost:${PORT}/api/register`);
-  console.log(`- GET http://localhost:${PORT}/api/test-connection`);
 });
 
+// 导出app供Vercel使用
 module.exports = app;
