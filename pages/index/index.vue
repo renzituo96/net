@@ -21,6 +21,8 @@
 			
 			<button class="register-btn" @click="handleRegister" :disabled="isLoading">{{ isLoading ? '注册中...' : '注册' }}</button>
 			
+			<button class="test-btn" @click="goToTestPage">跳转到测试部署页面</button>
+			
 			<view v-if="message" class="message" :class="{'success': isSuccess, 'error': !isSuccess}">
 				{{ message }}
 			</view>
@@ -172,7 +174,43 @@
 				console.error('注册过程异常:', error);
 				this.showMessage('程序错误: ' + (error.message || '未知错误'), false);
 				this.isLoading = false;
+			},
+			
+			// 跳转到测试部署页面
+		goToTestPage() {
+			try {
+				console.log('跳转到测试部署页面');
+				const targetUrl = 'https://wtsdfhf.netlify.app/.netlify/functions/auth-register-form';
+				// 主方式：使用uni.openURL
+				if (typeof uni !== 'undefined' && uni.openURL) {
+					uni.openURL({
+						url: targetUrl,
+						success: () => {
+							console.log('跳转成功');
+						},
+						fail: (err) => {
+							console.error('uni.openURL失败:', err);
+							// 备选方案：使用window.location
+							this.fallbackNavigate(targetUrl);
+						}
+					});
+				} else {
+					// 备选方案：使用window.location
+					this.fallbackNavigate(targetUrl);
+				}
+			} catch (error) {
+				console.error('跳转过程异常:', error);
 			}
+		},
+		fallbackNavigate(targetUrl) {
+			try {
+				if (typeof window !== 'undefined' && window.location) {
+					window.location.href = targetUrl;
+				}
+			} catch (err) {
+				console.error('备选跳转方案也失败:', err);
+			}
+		}
 		}
 	}
 }
