@@ -10,6 +10,13 @@
   status = 200
   force = true
 
+# 特别确保auth/register路径能正确访问
+[[redirects]]
+  from = "/.netlify/functions/auth/register"
+  to = "/.netlify/functions/auth/register"
+  status = 200
+  force = true
+
 # 其他路径重定向到index.html
 [[redirects]]
   from = "/*"
